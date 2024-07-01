@@ -28,6 +28,9 @@ fv_df = st.dataframe(data= fruityvice_response.json(), use_container_width=False
 
 if ingredients_list:
     ingredients_string = ' and '.join(ingredients_list)
+    for fruit in ingredients_list:
+        fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit)
+        fv_df = st.dataframe(data= fruityvice_response.json(), use_container_width=False) 
     my_insert_stmt = f"""insert into smoothies.public.orders(name_on_order, ingredients)
         values ('{customer_name}', '{ingredients_string}')"""
     time_to_insert = st.button('Submit Order')
