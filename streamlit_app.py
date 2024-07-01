@@ -11,8 +11,8 @@ st.write(
 
 cnx = st.connection("snowflake")
 session = cnx.session()
-my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
-
+my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'), col('SEARCH_ON'))
+pd_df = my_dataframe.to_pandas()
 ingredients_list = st.multiselect(
     'Choose up to 5 ingredients: ',
     my_dataframe
@@ -29,7 +29,9 @@ fv_df = st.dataframe(data= fruityvice_response.json(), use_container_width=False
 if ingredients_list:
     ingredients_string = ' and '.join(ingredients_list)
     for fruit in ingredients_list:
-        fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit)
+        search_on=pd_df.loc[pd_df['FRUIT_NAME'] == fruit, 'SEARCH_ON'].iloc[0]
+        st.write('The search value for ', fruit_chosen,' is ', search_on, '.')
+        fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + search_on)
         fv_df = st.dataframe(data= fruityvice_response.json(), use_container_width=False) 
     my_insert_stmt = f"""insert into smoothies.public.orders(name_on_order, ingredients)
         values ('{customer_name}', '{ingredients_string}')"""
