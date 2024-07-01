@@ -22,6 +22,10 @@ customer_name = st.text_input(
     'Input customer name here: '
 )
 
+import requests
+fruityvice_response = requests.get("https://fruityvice.com/api/fruit/watermelon")
+fv_df = st.dataframe(data= fruityvice_response.json(), use_container_width=True) 
+
 if ingredients_list:
     ingredients_string = ' and '.join(ingredients_list)
     my_insert_stmt = f"""insert into smoothies.public.orders(name_on_order, ingredients)
